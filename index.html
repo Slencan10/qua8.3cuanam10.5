@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhập Mã Code</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            background: #1a1a1a; /* Màu tối hơn */
+            overflow: hidden;
+            position: relative;
+        }
+        /* Animated background */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #8b0000, #2f4f4f, #483d8b, #556b2f);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            z-index: -1;
+            opacity: 0.8; /* Làm mờ nhẹ để tối hơn */
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Hiệu ứng hạt lấp lánh */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: sparkle 4s infinite;
+            pointer-events: none;
+        }
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 1;
+        }
+        h2 {
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 24px;
+        }
+        .form-control {
+            border-radius: 25px;
+            padding: 12px;
+            font-size: 16px;
+        }
+        .btn-danger {
+            border-radius: 25px;
+            padding: 12px;
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        .btn-danger:hover {
+            transform: scale(1.05);
+        }
+        #error {
+            font-size: 14px;
+            min-height: 20px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 576px) {
+            .container { padding: 20px; }
+            h2 { font-size: 20px; }
+            .form-control, .btn-danger { font-size: 14px; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <h2 class="text-center mb-4">Nhập Mã Code</h2>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="codeInput" placeholder="Nhập mã code của bạn">
+        </div>
+        <button class="btn btn-danger w-100" onclick="checkCode()">Xác Nhận</button>
+        <p id="error" class="text-danger text-center mt-3"></p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const codes = {
+            "F03G2B1501": "Nhân ngày 8/3 chúc cậu luôn đáng yêu, xinh đẹp, ngày càng giỏi giang, đạt được nhiều điều mong muốn và đặc biệt là có nhiều chàng trai theo đuổi cậu, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Quỳnh Anh nha!",
+            "F04G2B2412": "Chúc Nhã Anh ngày Quốc tế Phụ nữ vui vẻ, yêu đời và luôn tìm thấy niềm vui trong mỗi khoảnh khắc của cuộc sống. Nhã Anh là người có sức ảnh hưởng tích cực đến những người xung quanh, và tui hy vọng sẽ luôn tiếp tục như vậy, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Nhã Anh nha!",
+            "F05G3B0402": "Chúc Trâm Anh luôn xinh đẹp, tự tin và tỏa sáng, là một người đầy nhiệt huyết, mạnh mẽ và quyết đoán. Tui tin rằng Trâm Anh sẽ có một tương lai tươi rực rỡ, với đầy đủ thành công, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Trâm Anh nha!",
+            "F08G4B2601": "Chúc Hà 8/3 vui vẻ, biết là xinh đẹp dễ thương rồi nhưng mà vẫn chúc xinh đẹp hơn nữa nha, ngoài xinh đẹp ra thì còn học giỏi nữa , làm được điều mình muốn, có được mảnh ghép còn lại của đời mình, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Thu Hà nha!",
+            "F13G4B1301": "Chúc Vân Khánh 8/3 ngày càng xinh đẹp hơn, học giỏi, có nhiều chàng trai theo đuổi, thực hiện được điều mà bản thân đặt ra, ao ước, luôn luôn là một cô gái hạnh phúc, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Vân Khánh nha!",
+            "F17G2B1907": "Chúc Lan luôn là một cô gái mạnh mẽ, kiên cường và có thể vượt qua mọi thử thách để đạt được ước mơ của mình. manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Lan nha!",
+            "F18G3B1803": "Chúc Linh ngày 8/3 vui vẻ, hạnh phúc, luôn là một cô gái mạnh mẽ nhiệt huyết trong các hoạt động của trường lớp, xinh đẹp, học giỏi hơn, tìm được nửa đời còn lại, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Linh nha!",
+            "F20G3B0401": "Chúc Ngân ngày quốc tế phụ nữ vui vẻ, hạnh phúc, tràn ngập tiếng cười, ngày càng học giỏi hơn xinh đẹp hơn nữa, luôn luôn hạnh phúc hòa đồng với mọi người và thực hiện được mơ ước của bản thân, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Ngân nha!",
+            "F22G2B1810": "Chúc Như Ngọc ngày quốc tế phụ nữ vui vẻ, hạnh phúc, ngày càng xinh đẹp, học giỏi, có nhiều trai đẹp theo đuổi, thực hiện được ước mơ cảu bản thân, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Như Ngọc nha!",
+            "F23G3B2211": "Chúc Bảo Ngọc 8/3 vui vẻ, tràn ngập tiếng cười, mau lớn :))), xinh đẹp, học giỏi hơn nữa, có nhiều chàng trai theo đuổi, may mắn, thực hiện được điều mà bản thân mong muốn, ước mơ, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Bảo Ngọc nha!",
+            "F24G2B2108": "Chúc Nguyên ngày quốc tế phụ nữ vui vẻ, hạnh phúc, đạt được nhiều thành tích, vinh quang về cho bản thân nha, ngày càng xinh đẹp và học giỏi hơn nữa, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Nguyễn nha!",
+            "F26G1B2604": "Chúc Nhi 8/3 ngày càng xinh đẹp học giỏi đạt được nhiều danh hiệu, huy chương, thành tích vĩ đại, thực hiện được ước mơ, điều mà bản thân mong muốn, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Nhi nha!",
+            "F30G3B1012": "Chúc Thanh 8/3 vui vẻ, hạnh phúc, tràn đầy niềm vui và hạnh phúc, ngày càng xinh đẹp học giỏi hơn nữa, sớm tìm được nửa kia của mình, thực hiện được mục tiêu mà bản thân đặt ra, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Thanh nha!",
+            "F31G3B2904": "Chúc Ngô Thư 8/3 tràn đầy tiếng cười và sự hạnh phúc nha, ngày càng xinh đẹp, học giỏi hơn, có nhiều chàng trai theo đuổi, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Ngô Thư nha!",
+            "F32G3B1811": " Ngày 8/3, chúc Thư không chỉ có một ngày thật vui vẻ, mà mỗi ngày đều tràn ngập niềm vui và hạnh phúc. Ngày ngày càng xinh đẹp, học giỏi hơn nữa, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Thư nha!",
+            "F33G2B1103": " Chúc Phạm Thư 8/3 vui vẻ , tràn đầy niềm hạnh phúc, ngày càng xinh đẹp dễ thương hơn, học giỏi hơn, thực hiện được ước mơ, mong muốn mà bản thân đặt ra, có nhiều người theo đuổi, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Phạm Thư nha!",
+            "F34G3B2309": "Chúc Anh Thư 8/3 vui vẻ, tràn ngập niềm hạnh phúc, ngày càng xinh đẹp hơn, học giỏi hơn và đặc biệt là hòa đồng với mọi người hơn nữa, thực hiện được mục tiêu mà bản thân đặt ra, có nhiều chàng trai theo đuổi, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Anh Thư nha!",
+            "F35G1B1605": "Chúc Thúy 8/3 vui vẻ, hạnh phúc, ngày càng xinh đẹp, học giỏi hơn, có nhiều người theo đuổi và thực hiện được ước mơ của bản thân, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Thúy nha!",
+            "F36G1B1304": "Chúc Thụy ngày quốc tế phụ nữ vui vẻ, hạnh phúc, luôn luôn tươi cười với tất cả mọi người, ngày càng xinh đẹp hơn, chúc cái này hơi thừa nhưng mà chúc Thụy học giỏi giỏi hơn nữa, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Thụy nha!",
+            "F37G1B2708": "Chúc Mai Thy 8/3 vui vẻ nè, ngày ngày xinh đẹp hơn, học giỏi hơn, thực hiện được điều mà bản thân ao ước, có nhiều chàng trai theo đuổi, luôn tươi cười với mọi người, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Mai Thy nha! ",
+            "F38G4B2907": "Chúc Thanh Thy ngày quốc tế phụ nữ vui vẻ, tràn đầy tiếng cười, sự hạnh phúc, ngày càng học giỏi hơn, xinh đẹp hơn, hạnh phúc bên người yêu, thực hiện được điều mà mình ước muốn, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Thanh Thy nha!",
+            "F42G2B0907": "Chúc Tuyền có một ngày thật đặc biệt, một năm đầy ắp những niềm vui, hạnh phúc và những bước tiến vững chắc trên con đường đã chọn nè. manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Tuyền nha!",
+            "F43G3B2309": " Chúc Mỹ Văn ngày 8/3 vui vẻ tràn đầy sự hạnh phúc, ngày càng xin đẹp, học giỏi giỏi hơn nữa, thực hiện được điều mà bản thân ao ước, mong muốn, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Mỹ Văn nha!",
+            "F44G3B0506": "Chúc Vy 8/3 vui vẻ nha, thật sự là tui ngưỡng mộ Vy lắm luôn á dù là chúc cái này hơi thừa nhưng mà chúc Vy học giỏi hơn hơn nữa nè xinh đẹp hơn, thực hiện được ước mơ mà bản thân đặt ra, manifest mọi điều tốt đẹp nhất trên thế giới này sẽ đến với Vy nha!"
+
+        }; 
+
+        function checkCode() {
+            const input = document.getElementById("codeInput").value;
+            const error = document.getElementById("error");
+            if (codes[input]) {
+                localStorage.setItem("giftData", codes[input]);
+                window.location.href = "gift.html";
+            } else {
+                error.textContent = "Mã code không hợp lệ!";
+            }
+        }
+
+        // Tạo hạt lấp lánh
+        function createSparkles() {
+            for (let i = 0; i < 25; i++) {
+                const sparkle = document.createElement("div");
+                sparkle.className = "sparkle";
+                sparkle.style.left = `${Math.random() * 100}vw`;
+                sparkle.style.top = `${Math.random() * 100}vh`;
+                sparkle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                sparkle.style.animationDelay = `${Math.random() * 4}s`;
+                document.body.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 6000);
+            }
+        }
+        createSparkles();
+        setInterval(createSparkles, 4000); // Tạo mới mỗi 4s
+    </script>
+</body>
+</html>
